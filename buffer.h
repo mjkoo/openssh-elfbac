@@ -16,13 +16,17 @@
 #ifndef BUFFER_H
 #define BUFFER_H
 
+#include "memmgr.h"
+
 typedef struct {
 	u_char	*buf;		/* Buffer for data. */
 	u_int	 alloc;		/* Number of bytes allocated for data. */
 	u_int	 offset;	/* Offset of first byte containing data. */
 	u_int	 end;		/* Offset of last byte containing data. */
+    u_int    arena;
 }       Buffer;
 
+void	 buffer_arena_init(Buffer *, enum arenas);
 void	 buffer_init(Buffer *);
 void	 buffer_clear(Buffer *);
 void	 buffer_free(Buffer *);

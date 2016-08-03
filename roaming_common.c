@@ -32,7 +32,7 @@
 #include "atomicio.h"
 #include "log.h"
 #include "packet.h"
-#include "xmalloc.h"
+#include "memmgr.h"
 #include "cipher.h"
 #include "buffer.h"
 #include "roaming.h"
@@ -83,7 +83,7 @@ set_out_buffer_size(size_t size)
 	 */
 	if (out_buf == NULL) {
 		out_buf_size = size;
-		out_buf = xmalloc(size);
+		out_buf = xmemmgr_alloc(size, ROAMING);
 		out_start = 0;
 		out_last = 0;
 	}

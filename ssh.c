@@ -104,6 +104,7 @@
 #include "uidswap.h"
 #include "roaming.h"
 #include "version.h"
+#include "memmgr.h"
 
 #ifdef ENABLE_PKCS11
 #include "ssh-pkcs11.h"
@@ -248,6 +249,8 @@ main(int ac, char **av)
 
 	struct servent *sp;
 	Forward fwd;
+
+    memmgr_init();
 
 	/* Ensure that fds 0, 1 and 2 are open or directed to /dev/null */
 	sanitise_stdfd();

@@ -768,10 +768,12 @@ do_realpath(struct sftp_conn *conn, char *path)
 }
 
 int
-do_rename(struct sftp_conn *conn, char *oldpath, char *newpath)
+do_rename(struct sftp_conn *conn, char *oldpath, char *newpath, int force_legacy)
 {
 	Buffer msg;
 	u_int status, id;
+
+    (void)force_legacy;
 
 	buffer_init(&msg);
 

@@ -236,10 +236,10 @@ packet_set_connection(int fd_in, int fd_out)
 	active_state->newkeys[MODE_IN] = active_state->newkeys[MODE_OUT] = NULL;
 	if (!active_state->initialized) {
 		active_state->initialized = 1;
-		buffer_init(&active_state->input);
-		buffer_init(&active_state->output);
-		buffer_init(&active_state->outgoing_packet);
-		buffer_init(&active_state->incoming_packet);
+		buffer_arena_init(&active_state->input, PACKET);
+		buffer_arena_init(&active_state->output, PACKET);
+		buffer_arena_init(&active_state->outgoing_packet, PACKET);
+		buffer_arena_init(&active_state->incoming_packet, PACKET);
 		TAILQ_INIT(&active_state->outgoing);
 		active_state->p_send.packets = active_state->p_read.packets = 0;
 	}
@@ -528,7 +528,7 @@ packet_init_compression(void)
 	if (active_state->compression_buffer_ready == 1)
 		return;
 	active_state->compression_buffer_ready = 1;
-	buffer_init(&active_state->compression_buffer);
+	buffer_arena_init(&active_state->compression_buffer, PACKET);
 }
 
 void
@@ -1000,7 +1000,7 @@ packet_send2(void)
 			p->type = type;
 			memcpy(&p->payload, &active_state->outgoing_packet,
 			    sizeof(Buffer));
-			buffer_init(&active_state->outgoing_packet);
+			buffer_arena_init(&active_state->outgoing_packet, PACKET);
 			TAILQ_INSERT_TAIL(&active_state->outgoing, p, next);
 			return;
 		}

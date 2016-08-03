@@ -102,7 +102,7 @@ key_private_rsa1_to_blob(Key *key, Buffer *blob, const char *passphrase,
 		fatal("save_private_key_rsa: bad cipher");
 
 	/* This buffer is used to built the secret part of the private key. */
-	buffer_init(&buffer);
+	buffer_arena_init(&buffer, CRYPTO);
 
 	/* Put checkbytes for checking passphrase validity. */
 	rnd = arc4random();
@@ -127,7 +127,7 @@ key_private_rsa1_to_blob(Key *key, Buffer *blob, const char *passphrase,
 		buffer_put_char(&buffer, 0);
 
 	/* This buffer will be used to contain the data in the file. */
-	buffer_init(&encrypted);
+	buffer_arena_init(&encrypted, CRYPTO);
 
 	/* First store keyfile id string. */
 	for (i = 0; authfile_id_string[i]; i++)
@@ -261,7 +261,7 @@ key_save_private(Key *key, const char *filename, const char *passphrase,
 	Buffer keyblob;
 	int success = 0;
 
-	buffer_init(&keyblob);
+	buffer_arena_init(&keyblob, CRYPTO);
 	if (!key_private_to_blob(key, &keyblob, passphrase, comment))
 		goto out;
 	if (!key_save_private_blob(&keyblob, filename))
@@ -296,7 +296,7 @@ key_parse_public_rsa1(Buffer *blob, char **commentp)
 		debug3("Incorrect RSA1 identifier");
 		return NULL;
 	}
-	buffer_init(&copy);
+	buffer_arena_init(&copy, CRYPTO);
 	buffer_append(&copy, buffer_ptr(blob), buffer_len(blob));
 	buffer_consume(&copy, sizeof(authfile_id_string));
 
@@ -383,7 +383,7 @@ key_load_public_rsa1(int fd, const char *filename, char **commentp)
 	Buffer buffer;
 	Key *pub;
 
-	buffer_init(&buffer);
+	buffer_arena_init(&buffer, CRYPTO);
 	if (!key_load_file(fd, filename, &buffer)) {
 		buffer_free(&buffer);
 		return NULL;
@@ -440,7 +440,7 @@ key_parse_private_rsa1(Buffer *blob, const char *passphrase, char **commentp)
 		debug3("Incorrect RSA1 identifier");
 		return NULL;
 	}
-	buffer_init(&copy);
+	buffer_arena_init(&copy, CRYPTO);
 	buffer_append(&copy, buffer_ptr(blob), buffer_len(blob));
 	buffer_consume(&copy, sizeof(authfile_id_string));
 
@@ -467,7 +467,7 @@ key_parse_private_rsa1(Buffer *blob, const char *passphrase, char **commentp)
 		goto fail;
 	}
 	/* Initialize space for decrypted data. */
-	buffer_init(&decrypted);
+	buffer_arena_init(&decrypted, CRYPTO);
 	cp = buffer_append_space(&decrypted, buffer_len(&copy));
 
 	/* Rest of the buffer is encrypted.  Decrypt it using the passphrase. */
@@ -599,7 +599,7 @@ key_load_private_pem(int fd, int type, const char *passphrase,
 	Buffer buffer;
 	Key *prv;
 
-	buffer_init(&buffer);
+	buffer_arena_init(&buffer, CRYPTO);
 	if (!key_load_file(fd, NULL, &buffer)) {
 		buffer_free(&buffer);
 		return NULL;
@@ -682,7 +682,7 @@ key_load_private_type(int type, const char *filename, const char *passphrase,
 	if (perm_ok != NULL)
 		*perm_ok = 1;
 
-	buffer_init(&buffer);
+	buffer_arena_init(&buffer, CRYPTO);
 	if (!key_load_file(fd, filename, &buffer)) {
 		buffer_free(&buffer);
 		close(fd);
@@ -737,7 +737,7 @@ key_load_private(const char *filename, const char *passphrase,
 		return NULL;
 	}
 
-	buffer_init(&buffer);
+	buffer_arena_init(&buffer, CRYPTO);
 	if (!key_load_file(fd, filename, &buffer)) {
 		buffer_free(&buffer);
 		close(fd);

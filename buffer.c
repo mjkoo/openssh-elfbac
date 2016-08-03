@@ -20,7 +20,7 @@
 #include <string.h>
 #include <stdarg.h>
 
-#include "xmalloc.h"
+#include "memmgr.h"
 #include "buffer.h"
 #include "log.h"
 
@@ -31,15 +31,22 @@
 /* Initializes the buffer structure. */
 
 void
-buffer_init(Buffer *buffer)
+buffer_arena_init(Buffer *buffer, enum arenas arena_idx)
 {
 	const u_int len = 4096;
 
 	buffer->alloc = 0;
-	buffer->buf = xmalloc(len);
+	buffer->buf = xmemmgr_alloc(len, arena_idx);
 	buffer->alloc = len;
 	buffer->offset = 0;
 	buffer->end = 0;
+    buffer->arena = arena_idx;
+}
+
+void
+buffer_init(Buffer *buffer)
+{
+    buffer_arena_init(buffer, SHARED);
 }
 
 /* Frees any memory used for the buffer. */
@@ -48,9 +55,13 @@ void
 buffer_free(Buffer *buffer)
 {
 	if (buffer->alloc > 0) {
-		memset(buffer->buf, 0, buffer->alloc);
+        // This memset could be elided due to DSE, and is on GCC > 5 however our
+        // toolchain does not (see https://www.qualys.com/2016/01/14/cve-2016-0777-cve-2016-0778/openssh-cve-2016-0777-cve-2016-0778.txt)
+        // for a more detailed instruction. Explicitly remove it for demo
+        // purposes.
+		//memset(buffer->buf, 0, buffer->alloc);
 		buffer->alloc = 0;
-		free(buffer->buf);
+		memmgr_free(buffer->buf);
 	}
 }
 
@@ -103,7 +114,7 @@ void *
 buffer_append_space(Buffer *buffer, u_int len)
 {
 	u_int newlen;
-	void *p;
+	void *p, *new;
 
 	if (len > BUFFER_MAX_CHUNK)
 		fatal("buffer_append_space: len %u not supported", len);
@@ -130,7 +141,13 @@ restart:
 	if (newlen > BUFFER_MAX_LEN)
 		fatal("buffer_append_space: alloc %u not supported",
 		    newlen);
-	buffer->buf = xrealloc(buffer->buf, 1, newlen);
+
+    // realloc()ish
+    new = xmemmgr_alloc(newlen, buffer->arena);
+    memcpy(new, buffer->buf, buffer->end);
+    memmgr_free(buffer->buf);
+    buffer->buf = new;
+
 	buffer->alloc = newlen;
 	goto restart;
 	/* NOTREACHED */
