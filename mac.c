@@ -174,6 +174,7 @@ mac_init(Mac *mac)
 u_char *
 mac_compute(Mac *mac, u_int32_t seqno, u_char *data, int datalen)
 {
+    __attribute__((section(".data.shared")))
 	static union {
 		u_char m[EVP_MAX_MD_SIZE];
 		u_int64_t for_align;

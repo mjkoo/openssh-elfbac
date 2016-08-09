@@ -61,6 +61,8 @@ kex_ecdh_hash(
 {
 	Buffer b;
 	EVP_MD_CTX md;
+
+    __attribute__((section(".data.shared")))
 	static u_char digest[EVP_MAX_MD_SIZE];
 
 	buffer_init(&b);

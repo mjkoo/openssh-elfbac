@@ -51,10 +51,10 @@ struct arena {
 #define STATE(state)
 #endif
 
-STATE(".data.crypto") struct arena crypto_arena;
-STATE(".data.roaming") struct arena roaming_arena;
-STATE(".data.packet") struct arena packet_arena;
-STATE(".data.shared") struct arena shared_arena;
+STATE(".data.crypto_heap") struct arena crypto_arena;
+STATE(".data.roaming_heap") struct arena roaming_arena;
+STATE(".data.packet_heap") struct arena packet_arena;
+STATE(".data.shared_heap") struct arena shared_arena;
 
 static struct arena *arenas[] = {
     &shared_arena,
@@ -63,6 +63,7 @@ static struct arena *arenas[] = {
     &crypto_arena
 };
 
+#if 0
 void memmgr_init()
 {
     unsigned int i;
@@ -74,7 +75,6 @@ void memmgr_init()
     }
 }
 
-#if 0
 void memmgr_print_stats()
 {
     #ifdef DEBUG_MEMMGR_SUPPORT_STATS

@@ -113,20 +113,26 @@ struct mux_channel_confirm_ctx {
 };
 
 /* fd to control socket */
+__attribute__((section(".bss.shared")))
 int muxserver_sock = -1;
 
 /* client request id */
+__attribute__((section(".bss.shared")))
 u_int muxclient_request_id = 0;
 
 /* Multiplexing control command */
+__attribute__((section(".bss.shared")))
 u_int muxclient_command = 0;
 
 /* Set when signalled. */
+__attribute__((section(".bss.shared")))
 static volatile sig_atomic_t muxclient_terminate = 0;
 
 /* PID of multiplex server */
+__attribute__((section(".bss.shared")))
 static u_int muxserver_pid = 0;
 
+__attribute__((section(".bss.shared")))
 static Channel *mux_listener_channel = NULL;
 
 struct mux_master_state {

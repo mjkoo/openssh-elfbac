@@ -118,27 +118,33 @@ static char **saved_av;
 #endif
 
 /* Flag indicating whether debug mode is on.  May be set on the command line. */
+__attribute__((section(".bss.shared")))
 int debug_flag = 0;
 
 /* Flag indicating whether a tty should be requested */
+__attribute__((section(".bss.shared")))
 int tty_flag = 0;
 
 /* don't exec a shell */
+__attribute__((section(".bss.shared")))
 int no_shell_flag = 0;
 
 /*
  * Flag indicating that nothing should be read from stdin.  This can be set
  * on the command line.
  */
+__attribute__((section(".bss.shared")))
 int stdin_null_flag = 0;
 
 /*
  * Flag indicating that the current process should be backgrounded and
  * a new slave launched in the foreground for ControlPersist.
  */
+__attribute__((section(".bss.shared")))
 int need_controlpersist_detach = 0;
 
 /* Copies of flags for ControlPersist foreground slave */
+__attribute__((section(".bss.shared")))
 int ostdin_null_flag, ono_shell_flag, otty_flag, orequest_tty;
 
 /*
@@ -146,19 +152,24 @@ int ostdin_null_flag, ono_shell_flag, otty_flag, orequest_tty;
  * so that the passphrase can be entered manually, and then ssh goes to the
  * background.
  */
+__attribute__((section(".bss.shared")))
 int fork_after_authentication_flag = 0;
 
 /* forward stdio to remote host and port */
+__attribute__((section(".bss.shared")))
 char *stdio_forward_host = NULL;
+__attribute__((section(".bss.shared")))
 int stdio_forward_port = 0;
 
 /*
  * General data structure for command line options and options configurable
  * in configuration files.  See readconf.h.
  */
+__attribute__((section(".bss.shared")))
 Options options;
 
 /* optional user configfile */
+__attribute__((section(".bss.shared")))
 char *config = NULL;
 
 /*
@@ -166,25 +177,32 @@ char *config = NULL;
  * command line, or the HostName specified for the user-supplied name in a
  * configuration file.
  */
+__attribute__((section(".bss.shared")))
 char *host;
 
 /* socket address the host resolves to */
+__attribute__((section(".bss.shared")))
 struct sockaddr_storage hostaddr;
 
 /* Private host keys. */
 Sensitive sensitive_data;
 
 /* Original real UID. */
+__attribute__((section(".bss.shared")))
 uid_t original_real_uid;
+__attribute__((section(".bss.shared")))
 uid_t original_effective_uid;
 
 /* command to be executed */
+__attribute__((section(".bss.shared")))
 Buffer command;
 
 /* Should we execute a command or invoke a subsystem? */
+__attribute__((section(".bss.shared")))
 int subsystem_flag = 0;
 
 /* # of replies received for global requests */
+__attribute__((section(".bss.shared")))
 static int remote_forward_confirms_received = 0;
 
 /* mux.c */
@@ -249,8 +267,6 @@ main(int ac, char **av)
 
 	struct servent *sp;
 	Forward fwd;
-
-    memmgr_init();
 
 	/* Ensure that fds 0, 1 and 2 are open or directed to /dev/null */
 	sanitise_stdfd();
@@ -1352,6 +1368,7 @@ ssh_session(void)
 }
 
 /* request pty/x11/agent/tcpfwd/shell for channel */
+__attribute__((section(".text.packet")))
 static void
 ssh_session2_setup(int id, int success, void *arg)
 {
